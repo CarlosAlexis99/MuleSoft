@@ -1,0 +1,33 @@
+#%RAML 1.0
+types:
+  Cliente:
+    properties:
+      FirstName:
+        example: Example
+        type: string
+      LastName:
+        example: Example
+        type: string
+      Email:
+        example: Example
+        type: string
+      Company:
+        example: Example
+        type: string
+title: API de Clientes
+baseUri: carlosalexispruebatecnica.us-e2.cloudhub.io
+description: Devuelve todos los clientes
+mediaType:
+  - application/json
+version: 1.0.0
+protocols:
+  - HTTP
+  - HTTPS
+/api/v1/sps/customers:
+  get:
+    displayName: Obtener lista de clientes
+    responses:
+      "200":
+        body:
+          items:
+            type: Cliente
