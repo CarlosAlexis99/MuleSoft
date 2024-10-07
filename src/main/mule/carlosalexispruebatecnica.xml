@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0f97c80c-08cf-4ccc-abac-a393b20bab87" >
+		<http:listener-connection host="${http.listener.host}" port="${http.listener.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="aa8d33f1-d272-4364-a6d8-b9ffe25d8c30" >
+		<db:my-sql-connection host="${database.connection.host}" port="${database.connection.port}" user="${secure::database.connection.user}" password="${secure::database.connection.password}" database="${database.connection.database}" />
+	</db:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="a5850819-b36d-415f-a7aa-d76b497cf817" file="${env}.secure.properties" key="${secure.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="1773d539-9388-4f84-987b-9ff97671783c" file="${env}.properties" />
+	<flow name="carlosalexispruebatecnicaFlow" doc:id="b1c5abe8-1589-4b8f-a502-84ececf487ad" >
+		<http:listener doc:name="Listener" doc:id="55f76a8e-dd9f-4f5a-a8f8-ff7b01130b72" config-ref="HTTP_Listener_config" path="/api/v1/sps/customers"/>
+		<db:select doc:name="Select" doc:id="cde10d41-d4f8-4341-aaa4-fd0c296b5e51" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT *
+FROM customers]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="719e1f8d-c9c1-4c9a-90be-e649e3214d32" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+	payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
